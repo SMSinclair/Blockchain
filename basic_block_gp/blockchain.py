@@ -78,7 +78,7 @@ class Blockchain(object):
         # easier to work with and understand
 
         # TODO: Return the hashed block string in hexadecimal format
-        return(hex_hash)
+        return hex_hash
 
     @property
     def last_block(self):
@@ -92,9 +92,13 @@ class Blockchain(object):
         in an effort to find a number that is a valid proof
         :return: A valid proof for the provided block
         """
-        # TODO
-        pass
+        block_string = json.dumps(block, sort_keys=True)
+        
+        proof = 0
+        while self.valid_proof(block_string, proof) is False:
+            proof += 1
         # return proof
+        return proof
 
     @staticmethod
     def valid_proof(block_string, proof):
@@ -109,9 +113,11 @@ class Blockchain(object):
         :return: True if the resulting hash is a valid proof, False otherwise
         """
         # TODO
-        pass
-        # return True or False
+        guess = f'{block_string}{proof}'.encode()
+        guess_hash = hashlib.sha256(guess).hexdigest()
 
+        # return True or False
+        return guess_hash[:6] == '000000'
 
 # Instantiate our Node
 app = Flask(__name__)
@@ -121,19 +127,20 @@ node_identifier = str(uuid4()).replace('-', '')
 
 # Instantiate the Blockchain
 blockchain = Blockchain()
-print(blockchain.chain)
-print(blockchain.hash(blockchain.last_block))
-
 
 @app.route('/mine', methods=['GET'])
 def mine():
     # Run the proof of work algorithm to get the next proof
+    proof = blockchain.proof_of_work(blockchain.last_block)
+
 
     # Forge the new Block by adding it to the chain with the proof
+    previous_hash = blockchain.hash(blockchain.last_block)
+    new_block = blockchain.new_block(proof, previous_hash)
 
     response = {
         # TODO: Send a JSON response with the new block
-        "message": "Hello World!"
+        "block": new_block
     }
 
     return jsonify(response), 200
