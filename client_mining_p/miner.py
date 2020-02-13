@@ -38,7 +38,7 @@ def valid_proof(block_string, proof):
     guess_encoded = guess.encode()
     guess_hash = hashlib.sha256(guess_encoded).hexdigest()
     
-    if guess_hash[:6] == '000000':
+    if guess_hash[:3] == '000':
         return True
     return False
 
@@ -65,7 +65,7 @@ if __name__ == '__main__':
         try:
             data = r.json()
         except ValueError:
-            print("Error:  Non-json response")
+            print("Error: Non-json response")
             print("Response returned:")
             print(r)
             break
@@ -73,7 +73,7 @@ if __name__ == '__main__':
         # TODO: Get the block from `data` and use it to look for a new proof
         block = data['last_block']
         new_proof = proof_of_work(block)
-        print(new_proof)
+        # print(new_proof)
 
         # When found, POST it to the server {"proof": new_proof, "id": id}
         post_data = {
@@ -81,6 +81,8 @@ if __name__ == '__main__':
             "id": id
             }
         r = requests.post(url=node + "/mine", json=post_data)
+        # STRETCH: catch non-Json response using method above
+        
         data = r.json()
 
         # TODO: If the server responds with a 'message' 'New Block Forged'

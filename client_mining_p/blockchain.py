@@ -118,7 +118,7 @@ class Blockchain(object):
         guess_hash = hashlib.sha256(guess_encoded).hexdigest()
 
         # return True or False
-        return guess_hash[:6] == '000000'
+        return guess_hash[:3] == '000'
 
 # Instantiate our Node
 app = Flask(__name__)
@@ -150,7 +150,8 @@ def mine():
     
     # Check if it's a valid proof
     if blockchain.valid_proof(block_string, proof):
-        blockchain.new_block(proof, blockchain.hash(block_string))
+        previous_hash = blockchain.hash(block_string)
+        blockchain.new_block(proof, previous_hash)
         response = {
             'message': "New Block Forged"
         }
