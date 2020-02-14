@@ -192,8 +192,6 @@ def mine():
 
         new_block = blockchain.new_block(proof, previous_hash)
 
-        blockchain.new_block(proof, previous_hash)
-
         response = {
             # TODO: Send a JSON response with the new block
             'block': new_block,
